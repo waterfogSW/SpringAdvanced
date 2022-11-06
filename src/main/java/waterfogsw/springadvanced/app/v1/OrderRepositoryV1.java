@@ -3,7 +3,7 @@ package waterfogsw.springadvanced.app.v1;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
-import waterfogsw.springadvanced.trace.HelloTraceV1;
+import waterfogsw.springadvanced.trace.hellotrace.HelloTraceV1;
 import waterfogsw.springadvanced.trace.TraceStatus;
 
 @Repository

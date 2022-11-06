@@ -1,38 +1,41 @@
-package waterfogsw.springadvanced.trace;
-
-import org.springframework.stereotype.Component;
+package waterfogsw.springadvanced.trace.logtrace;
 
 import lombok.extern.slf4j.Slf4j;
+import waterfogsw.springadvanced.trace.TraceId;
+import waterfogsw.springadvanced.trace.TraceStatus;
 
 @Slf4j
-@Component
-public class HelloTraceV2 {
+public class FieldLogTrace implements LogTrace {
 
   private static final String START_PREFIX = "-->";
   private static final String COMPLETE_PREFIX = "<--";
   private static final String EX_PREFIX = "<X-";
 
+  private TraceId traceIdHolder; //traceId 동기화, 동시성 이슈 발생 가능
+
+  @Override
   public TraceStatus begin(String message) {
-    TraceId traceId = new TraceId();
+    syncTraceId();
+    TraceId traceId = traceIdHolder;
     long startTimeMs = System.currentTimeMillis();
     log.info("[{}] {}{}", traceId.getId(), addSpace(START_PREFIX, traceId.getLevel()), message);
     return new TraceStatus(traceId, startTimeMs, message);
   }
 
-  public TraceStatus beginSync(
-      TraceId previousTraceId,
-      String message
-  ) {
-    TraceId nextId = previousTraceId.createNextId();
-    long startTimeMs = System.currentTimeMillis();
-    log.info("[{}] {}{}", nextId.getId(), addSpace(START_PREFIX, nextId.getLevel()), message);
-    return new TraceStatus(nextId, startTimeMs, message);
+  private void syncTraceId() {
+    if (traceIdHolder == null) {
+      traceIdHolder = new TraceId();
+      return;
+    }
+    traceIdHolder = traceIdHolder.createNextId();
   }
 
+  @Override
   public void end(TraceStatus status) {
     complete(status, null);
   }
 
+  @Override
   public void exception(
       TraceStatus status,
       Exception e
@@ -48,16 +51,25 @@ public class HelloTraceV2 {
     long resultTimeMs = stopTimeMs - status.getStartTimeMs();
     TraceId traceId = status.getTraceId();
     if (e == null) {
-      log.info(
-          "[{}] {}{} time={}ms", traceId.getId(), addSpace(COMPLETE_PREFIX, traceId.getLevel()),
-          status.getMessage(), resultTimeMs
+      log.info("[{}] {}{} time={}ms", traceId.getId(),
+               addSpace(COMPLETE_PREFIX, traceId.getLevel()), status.getMessage(), resultTimeMs
       );
     } else {
-      log.info(
-          "[{}] {}{} time={}ms ex={}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()),
-          status.getMessage(), resultTimeMs, e.toString()
+      log.info("[{}] {}{} time={}ms ex={}", traceId.getId(),
+               addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), resultTimeMs,
+               e.toString()
       );
     }
+
+    releaseTraceId();
+  }
+
+  private void releaseTraceId() {
+    if (traceIdHolder.isFirstLevel()) {
+      traceIdHolder = null; //destroy
+      return;
+    }
+    traceIdHolder = traceIdHolder.createPreviousId();
   }
 
   private static String addSpace(

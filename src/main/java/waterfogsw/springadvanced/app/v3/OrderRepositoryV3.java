@@ -1,25 +1,23 @@
-package waterfogsw.springadvanced.app.v2;
+package waterfogsw.springadvanced.app.v3;
 
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
-import waterfogsw.springadvanced.trace.hellotrace.HelloTraceV2;
-import waterfogsw.springadvanced.trace.TraceId;
 import waterfogsw.springadvanced.trace.TraceStatus;
+import waterfogsw.springadvanced.trace.hellotrace.HelloTraceV1;
+import waterfogsw.springadvanced.trace.logtrace.LogTrace;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderRepositoryV2 {
+public class OrderRepositoryV3 {
 
-  private final HelloTraceV2 trace;
+  private final LogTrace trace;
 
-  public void save(
-      TraceId traceId,
-      String itemId
-  ) {
+  public void save(String itemId) {
+
     TraceStatus status = null;
     try {
-      status = trace.beginSync(traceId, "OrderRepository.request()");
+      status = trace.begin("OrderRepository.request()");
 
       //저장 로직
       if (itemId.equals("ex")) {

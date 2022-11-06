@@ -1,8 +1,10 @@
-package waterfogsw.springadvanced.trace;
+package waterfogsw.springadvanced.trace.hellotrace;
 
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
+import waterfogsw.springadvanced.trace.TraceId;
+import waterfogsw.springadvanced.trace.TraceStatus;
 
 @Slf4j
 @Component

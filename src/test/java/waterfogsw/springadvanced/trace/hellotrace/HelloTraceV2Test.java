@@ -1,6 +1,9 @@
-package waterfogsw.springadvanced.trace;
+package waterfogsw.springadvanced.trace.hellotrace;
 
 import org.junit.jupiter.api.Test;
+
+import waterfogsw.springadvanced.trace.TraceStatus;
+import waterfogsw.springadvanced.trace.hellotrace.HelloTraceV2;
 
 class HelloTraceV2Test {
 

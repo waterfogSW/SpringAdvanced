@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import waterfogsw.springadvanced.trace.HelloTraceV2;
+import waterfogsw.springadvanced.trace.hellotrace.HelloTraceV2;
 import waterfogsw.springadvanced.trace.TraceStatus;
 
 @RestController
