@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import waterfogsw.springadvanced.trace.HelloTraceV1;
+import waterfogsw.springadvanced.trace.HelloTraceV2;
 import waterfogsw.springadvanced.trace.TraceStatus;
 
 @RestController
@@ -14,7 +14,7 @@ import waterfogsw.springadvanced.trace.TraceStatus;
 public class OrderControllerV2 {
 
   private final OrderServiceV2 orderService;
-  private final HelloTraceV1 trace;
+  private final HelloTraceV2 trace;
 
   @GetMapping("/v2/request")
   @ResponseStatus(HttpStatus.OK)
@@ -23,7 +23,7 @@ public class OrderControllerV2 {
 
     try {
       status = trace.begin("OrderController.request()");
-      orderService.orderItem(itemId);
+      orderService.orderItem(status.getTraceId(), itemId);
       trace.end(status);
       return "ok";
     } catch (RuntimeException ex) {
